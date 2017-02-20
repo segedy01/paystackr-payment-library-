@@ -23,6 +23,16 @@ class PayStackr(BasePayStackr):
                 raise FailedAuthentication("Get an authentication token")
 
     def method_calls(self, method, url, payload=None):
+        """
+            The Rasen Shuriken HTTP Method. Allows only reasonable http calls
+            when all the right parameters are provided. Its an easy to use method
+
+            :param method: HTTP_METHOD (Get, Post .....)
+            :param url: a valid url (https://letsgowinasoul. dazzall)
+            :param payload: payload to be sent to the above url. do you know json kungfu?
+            :return: A tuple that consist of status code, message, and a body.
+        """
+
         self.payload = payload
         self.url = url
         http_method = {
@@ -43,6 +53,12 @@ class PayStackr(BasePayStackr):
         return response.status_code, response.message, response.data
 
     def set_header(self, **kwargs):
+        """
+            I work where theres no BR so a lot of **kwargs and *args.
+            **Kwargs for unseen situations
+            :param kwargs:
+            :return: A dict
+        """
         if kwargs:
             if not isinstance(kwargs, dict):
                 raise InvalidType("K for keyword argument **Kwargs only; read python Documentation")

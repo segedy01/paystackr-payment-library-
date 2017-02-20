@@ -23,21 +23,30 @@ class EmailError(PaystackrError):
     """
     pass
 
+
 class MethodNotImplemented(PaystackrError):
     """
         default error for unimplemented methods calls
     """
+    pass
+
 
 class InvalidHTTPMethod(PaystackrError):
     """
         Exception raised when an invalid http method is called
     """
+    pass
+
 
 class InvalidType(PaystackrError):
     """
         for any data type not expected
     """
+    pass
+
+
 class InvalidPayload(PaystackrError):
     """
         raised when nothing is returned
     """
+    pass
