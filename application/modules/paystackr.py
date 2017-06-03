@@ -3,10 +3,8 @@ import os
 from . import BasePayStackr
 from exceptions import *
 import requests
-from constants.utils_constants import *
+from application.constants.utils_constants import *
 
-
-_SECRET_KEY = os.environ.get('SECRET_KEY') or "th1s ls @ $ecr3t k3y"
 
 
 class PayStackr(BasePayStackr):
@@ -18,9 +16,10 @@ class PayStackr(BasePayStackr):
     def __init__(self, authentication_token=None):
         self.authentication_token = authentication_token
         if not self.authentication_token:
-            self.authentication_token = _SECRET_KEY
+            self.authentication_token = os.environ.get('SECRET_KEY')
             if not self.authentication_token:
-                raise FailedAuthentication("Get an authentication token")
+                raise FailedAuthentication("Get a paystack authentication token")
+
 
     def method_calls(self, method, url, payload=None):
         """
@@ -30,7 +29,7 @@ class PayStackr(BasePayStackr):
             :param method: HTTP_METHOD (Get, Post .....)
             :param url: a valid url (https://letsgowinasoul. dazzall)
             :param payload: payload to be sent to the above url. do you know json kungfu?
-            :return: A tuple that consist of status code, message, and a body.
+            :return: A tuple that consist of status, message, and a body.
         """
 
         self.payload = payload
@@ -47,10 +46,13 @@ class PayStackr(BasePayStackr):
         if self.get_method not in http_method:
             raise InvalidHTTPMethod("Check Python requests documentation for ")
         method_call = http_method.get(self.get_method)
-        response = method_call(headers=self.set_header(), data=self.payload)
-        if not response:
-            raise InvalidPayload("Payload Man!! You gave a wrong load")
-        return response.status_code, response.message, response.data
+
+        get_response = method_call(url=self.url, headers=self.set_header(), json=self.payload)
+
+        if not get_response:
+             raise InvalidPayload("Payload Man!! You gave a wrong load")
+
+        return get_response
 
     def set_header(self, **kwargs):
         """
@@ -60,15 +62,14 @@ class PayStackr(BasePayStackr):
             :return: A dict
         """
         if kwargs:
-            if not isinstance(kwargs, dict):
-                raise InvalidType("K for keyword argument **Kwargs only; read python Documentation")
 
             header =  {
                     "Content-Type": MIME_TYPE,
                     "Authorization": "Bearer " + self.authentication_token,
                     }
-            header = header.update(kwargs)
+            header.update(kwargs)
             return header
+
         return {
             "Content-Type": MIME_TYPE,
             "Authorization": "Bearer " + self.authentication_token,
